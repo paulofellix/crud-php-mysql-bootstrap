@@ -6,12 +6,28 @@ $result = mysqli_query($link, "select * from album");
 ?>
 
 
-<h2>Index</h2>
-<hr/>
 
 <div class="row">
+	<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+		<h3>Index
+			<a href="novo.php">
+				<button type="button" class="btn btn-primary">Novo</button>
+			</a>
+		</h3>	
+	</div>	
+</div>
+<hr/>
+<div class="row">
+	<div class="col-md-10 col-lg-10 col-sm-10">
+		<input type="text" id="pesquisaAlbum" class="form-control" />
+	</div>
+	<div class="col-md-2 col-lg-2 col-sm-2">
+		<button id="btnPesquisarAlbum" class="btn btn-default">Pesquisar...</button>
+	</div>
+</div>
+<div class="row">
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-		<table class="table table-striped table-hover">
+		<table class="table table-striped table-hover" id="tblAlbuns">
 			<thead>
 				<tr>
 					<th>Id</th>	
@@ -42,6 +58,39 @@ $result = mysqli_query($link, "select * from album");
 	</div>	
 </div>
 
-<?php	include_once 'rodape.html'; ?>
+<?php include_once 'rodape.html'; ?>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('#btnPesquisarAlbum').click(function () {
+			var termoPesquisa = $('#pesquisaAlbum').val();
+			$.ajax({
+				method: "GET",
+				dataType: "JSON",
+				url: "pesquisa.php?termoPesquisa="+ termoPesquisa,
+				success: function (data) {
+					$('#tblAlbuns tbody > tr').remove();
+					$.each(data, function (i, album) {
+						$('#tblAlbuns tbody').append(
+							"<tr>" +
+							"   <td>" + album.id + "</td>" +
+							"   <td>" + album.ds_album + "</td>" +
+							"   <td>" + album.dt_album + "</td>" +
+							"   <td>"+
+							"       <a href='detalhes.php?id="+album.id+"'>Detalhes</a> | "+
+							"       <a href='editar.php?id="+album.id+"'>Editar</a> |    "+
+							"       <a href='excluir.php?id="+album.id+"'>Excluir</a>"+
+							"   </td>"+
+							"</tr>"
+							);
+					});
+				},
+				error: function (data) {
+					alert("Houve um erro na pesquisa");
+				}
+			});
+		});
+	});
+</script>
 
 
